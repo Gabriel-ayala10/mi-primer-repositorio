@@ -78,7 +78,7 @@
     .badge-success { background: #dcfce7; color: var(--success); }
     .badge-danger { background: #fee2e2; color: var(--danger); }
 
-    /* SECCIÓN ACTIVIDADES (Placeholder futuro) */
+    /* SECCIÓN ACTIVIDADES */
     .placeholder-card {
       border: 2px dashed var(--border); background: transparent; text-align: center; padding: 40px; color: #64748b;
     }
@@ -93,11 +93,11 @@
         <h2>Acceso al Sistema</h2>
         <form id="loginForm">
           <div class="form-group">
-            <label>Usuario</label>
+            <label for="username">Usuario</label>
             <input type="text" id="username" placeholder="admin" required>
           </div>
           <div class="form-group">
-            <label>Contraseña</label>
+            <label for="password">Contraseña</label>
             <input type="password" id="password" placeholder="1234" required>
           </div>
           <p id="loginError" style="color: var(--danger); font-size: 12px; display: none; margin-bottom: 10px;">Usuario o contraseña incorrectos.</p>
@@ -113,10 +113,9 @@
       <!-- Menú Lateral Nav -->
       <div class="sidebar">
         <h2>Panel Académico</h2>
-        <button class="nav-btn active" onclick="switchSection('estudiantes')">👥 Registro Estudiantes</button>
-        <button class="nav-btn" onclick="switchSection('notas')">📊 Registro de Notas</button>
-        <button class="nav-btn" onclick="switchSection('actividades')">📅 Actividades Académicas</button>
-        <!-- Espacio listo para más opciones -->
+        <button class="nav-btn active" onclick="switchSection('estudiantes', event)">👥 Registro Estudiantes</button>
+        <button class="nav-btn" onclick="switchSection('notas', event)">📊 Registro de Notas</button>
+        <button class="nav-btn" onclick="switchSection('actividades', event)">📅 Actividades Académicas</button>
         <button class="nav-btn btn-logout" onclick="logout()">Cerrar Sesión</button>
       </div>
 
@@ -133,23 +132,23 @@
             <form id="formEstudiante">
               <div class="form-grid">
                 <div class="form-group">
-                  <label>Código Estudiante</label>
+                  <label for="regCodigo">Código Estudiante</label>
                   <input type="text" id="regCodigo" placeholder="EST-001" required>
                 </div>
                 <div class="form-group">
-                  <label>Nombre Completo</label>
+                  <label for="regNombre">Nombre Completo</label>
                   <input type="text" id="regNombre" placeholder="Ej. Ana Torres" required>
                 </div>
                 <div class="form-group">
-                  <label>Edad</label>
+                  <label for="regEdad">Edad</label>
                   <input type="number" id="regEdad" min="15" max="90" required>
                 </div>
                 <div class="form-group">
-                  <label>Curso Asignado</label>
+                  <label for="regCurso">Curso Asignado</label>
                   <input type="text" id="regCurso" placeholder="Estructuras I" required>
                 </div>
                 <div class="form-group">
-                  <label>Semestre de Clases</label>
+                  <label for="regSemestre">Semestre de Clases</label>
                   <select id="regSemestre" required>
                     <option value="">Seleccionar...</option>
                     <option value="2026-I">2026-I</option>
@@ -179,9 +178,7 @@
                     <th>Acciones</th>
                   </tr>
                 </thead>
-                <tbody id="tablaEstudiantes">
-                  <!-- Se llena dinámicamente -->
-                </tbody>
+                <tbody id="tablaEstudiantes"></tbody>
               </table>
             </div>
           </div>
@@ -197,21 +194,21 @@
             <form id="formNotas">
               <div class="form-grid">
                 <div class="form-group">
-                  <label>Seleccionar Estudiante</label>
+                  <label for="notaEstudianteSelect">Seleccionar Estudiante</label>
                   <select id="notaEstudianteSelect" required>
                     <option value="">Seleccione un estudiante registrado...</option>
                   </select>
                 </div>
                 <div class="form-group">
-                  <label>Nota 1</label>
+                  <label for="nota1">Nota 1</label>
                   <input type="number" id="nota1" min="0" max="20" step="0.1" required>
                 </div>
                 <div class="form-group">
-                  <label>Nota 2</label>
+                  <label for="nota2">Nota 2</label>
                   <input type="number" id="nota2" min="0" max="20" step="0.1" required>
                 </div>
                 <div class="form-group">
-                  <label>Nota 3</label>
+                  <label for="nota3">Nota 3</label>
                   <input type="number" id="nota3" min="0" max="20" step="0.1" required>
                 </div>
               </div>
@@ -235,9 +232,7 @@
                     <th>Estado</th>
                   </tr>
                 </thead>
-                <tbody id="tablaNotas">
-                  <!-- Se llena dinámicamente -->
-                </tbody>
+                <tbody id="tablaNotas"></tbody>
               </table>
             </div>
           </div>
@@ -259,7 +254,6 @@
   </div>
 
   <script>
-    // ESTADO DE LA APLICACIÓN (Base de datos local)
     let estudiantes = [
       { codigo: "EST-01", nombre: "Carlos Mendoza", edad: 20, curso: "Análisis Estructural", semestre: "2026-I", n1: 14, n2: 10, n3: 11 }
     ];
@@ -270,7 +264,6 @@
       const user = document.getElementById('username').value;
       const pass = document.getElementById('password').value;
 
-      // Validación simple (Usuario: admin / Contraseña: 1234)
       if (user === 'admin' && pass === '1234') {
         document.getElementById('loginView').classList.remove('active');
         document.getElementById('dashboardView').classList.add('active');
@@ -288,17 +281,16 @@
     }
 
     // NAVEGACIÓN EN EL DASHBOARD
-    function switchSection(sectionId) {
-      // Ocultar todas las secciones y quitar estilos activos
+    function switchSection(sectionId, evt) {
       document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
 
-      // Mostrar la seleccionada
-      document.getElementById('sec-' + sectionId).style.display = 'block';
-      event.target.classList.add('active');
+      const targetSec = document.getElementById('sec-' + sectionId);
+      if (targetSec) targetSec.style.display = 'block';
+      
+      if (evt && evt.target) evt.target.classList.add('active');
 
-      // Actualizar los combos de estudiantes si cambia a notas
-      if(sectionId === 'notas') actualizarSelectEstudiantes();
+      if (sectionId === 'notas') actualizarSelectEstudiantes();
     }
 
     // GESTIÓN DE ESTUDIANTES
@@ -310,7 +302,7 @@
         edad: document.getElementById('regEdad').value,
         curso: document.getElementById('regCurso').value,
         semestre: document.getElementById('regSemestre').value,
-        n1: 0, n2: 0, n3: 0 // Notas por defecto
+        n1: 0, n2: 0, n3: 0
       };
 
       estudiantes.push(nuevoEst);
@@ -358,7 +350,6 @@
 
     // RENDERS
     function renderizarTablas() {
-      // 1. Tabla Estudiantes
       const tbodyEst = document.getElementById('tablaEstudiantes');
       tbodyEst.innerHTML = '';
       estudiantes.forEach(e => {
@@ -374,17 +365,12 @@
         `;
       });
 
-      // 2. Tabla Notas y Métricas
       const tbodyNotas = document.getElementById('tablaNotas');
       tbodyNotas.innerHTML = '';
       estudiantes.forEach(e => {
         const notas = [e.n1, e.n2, e.n3];
         const promedio = ((e.n1 + e.n2 + e.n3) / 3).toFixed(2);
-        
-        // Total de notas menores a 13
         const notasMenores13 = notas.filter(n => n < 13).length;
-        
-        // Criterio de Aprobado (Promedio >= 11)
         const aprobado = promedio >= 11;
 
         tbodyNotas.innerHTML += `
@@ -395,7 +381,7 @@
             <td>${e.n2}</td>
             <td>${e.n3}</td>
             <td><strong>${promedio}</strong></td>
-            <td><strong style="color: ${notasMenores13 > 0 ? 'var(--danger)' : 'text'}">${notasMenores13}</strong></td>
+            <td><strong style="color: ${notasMenores13 > 0 ? 'var(--danger)' : 'inherit'}">${notasMenores13}</strong></td>
             <td>
               <span class="badge ${aprobado ? 'badge-success' : 'badge-danger'}">
                 ${aprobado ? 'Aprobado' : 'Desaprobado'}
@@ -408,7 +394,5 @@
   </script>
 </body>
 </html>
-
-
 
 
